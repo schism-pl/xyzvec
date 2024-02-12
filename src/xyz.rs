@@ -79,18 +79,6 @@ impl<T: VecInner> XYZVec<T> {
     pub fn cross_prod_magnitude_sqd(&self, other: Self) -> T {
         self.cross_prod(other).l2_norm_sqd()
     }
-
-    // fn rotated_by_3d(&self, _other: Self, _theta: T) -> Self {
-    //     panic!("Reenable if we do 3d");
-    //     // let c  = theta.cos();
-    //     // let s = theta.sin();
-
-    //     // let cross_prod = self.cross_prod(other);
-    //     // let x = ((self.x() - other.x()*cross_prod))*(c - 1.0) + (other.z()*self.y() - other.y()*self.z())*s;
-    //     // let y = ((self.y() - other.y()*cross_prod))*(c - 1.0) + (other.x()*self.z() - other.z()*self.x())*s;
-    //     // let z = ((self.z() - other.z()*cross_prod))*(c - 1.0) + (other.y()*self.x() - other.x()*self.y())*s;
-    //     // Self::new([x,y,z])
-    // }
 }
 
 impl<T: VecInner> Add for XYZVec<T> {
@@ -162,3 +150,15 @@ impl XYZVec<f64> {
         Self { inner: [0.0; 3] }
     }
 }
+
+// fn rotated_by_3d(&self, _other: Self, _theta: T) -> Self {
+//     panic!("Reenable if we do 3d");
+//     // let c  = theta.cos();
+//     // let s = theta.sin();
+
+//     // let cross_prod = self.cross_prod(other);
+//     // let x = ((self.x() - other.x()*cross_prod))*(c - 1.0) + (other.z()*self.y() - other.y()*self.z())*s;
+//     // let y = ((self.y() - other.y()*cross_prod))*(c - 1.0) + (other.x()*self.z() - other.z()*self.x())*s;
+//     // let z = ((self.z() - other.z()*cross_prod))*(c - 1.0) + (other.y()*self.x() - other.x()*self.y())*s;
+//     // Self::new([x,y,z])
+// }

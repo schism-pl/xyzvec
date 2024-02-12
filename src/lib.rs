@@ -7,6 +7,9 @@ use std::{
     ops::{Add, AddAssign, Div, Mul, Sub, SubAssign},
 };
 
+pub use xy::XYVec;
+pub use xyz::XYZVec;
+
 pub trait VecInner:
     Clone
     + Copy
