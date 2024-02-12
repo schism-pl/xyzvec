@@ -3,52 +3,48 @@ use std::{
     ops::{Add, AddAssign, Sub, SubAssign},
 };
 
+use crate::VecInner;
+
 // TODO: parameterize by floating point length / fixed-point
 // TODO: simd support?
 
 #[derive(Clone, PartialEq, Copy)]
-pub struct XYZVec {
-    inner: [f64; 3],
+pub struct XYZVec<T> {
+    inner: [T; 3],
 }
 
-impl XYZVec {
-    pub fn new(inner: [f64; 3]) -> Self {
+impl<T: VecInner> XYZVec<T> {
+    pub fn new(inner: [T; 3]) -> Self {
         Self { inner }
     }
 
-    pub fn zeroes() -> Self {
-        Self { inner: [0.0; 3] }
-    }
-
-    pub fn x(&self) -> f64 {
+    pub fn x(&self) -> T {
         self.inner[0]
     }
 
-    pub fn y(&self) -> f64 {
+    pub fn y(&self) -> T {
         self.inner[1]
     }
 
-    pub fn z(&self) -> f64 {
+    pub fn z(&self) -> T {
         self.inner[2]
     }
 
-    pub fn scale_by(&self, d: f64) -> Self {
-        let mut r = Self::zeroes();
-        r.inner[0] = self.inner[0] * d;
-        r.inner[1] = self.inner[1] * d;
-        r.inner[2] = self.inner[2] * d;
-        r
+    pub fn scale_by(&self, d: T) -> Self {
+        let x = self.x() * d;
+        let y = self.y() * d;
+        let z = self.z() * d;
+        Self::new([x, y, z])
     }
 
-    pub fn div_by(&self, d: f64) -> Self {
-        let mut r = Self::zeroes();
-        r.inner[0] = self.inner[0] / d;
-        r.inner[1] = self.inner[1] / d;
-        r.inner[2] = self.inner[2] / d;
-        r
+    pub fn div_by(&self, d: T) -> Self {
+        let x = self.x() / d;
+        let y = self.y() / d;
+        let z = self.z() / d;
+        Self::new([x, y, z])
     }
 
-    pub fn translated_by(&self, x: f64, y: f64, z: f64) -> Self {
+    pub fn translated_by(&self, x: T, y: T, z: T) -> Self {
         let new_x = self.x() + x;
         let new_y = self.y() + y;
         let new_z = self.z() + z;
@@ -57,34 +53,34 @@ impl XYZVec {
         }
     }
 
-    pub fn l1_norm(&self) -> f64 {
+    pub fn l1_norm(&self) -> T {
         self.x() + self.y() + self.z()
     }
 
-    pub fn l2_norm(&self) -> f64 {
-        self.l2_norm_sqd().sqrt()
-    }
+    // pub fn l2_norm(&self) -> T {
+    //     self.l2_norm_sqd().sqrt()
+    // }
 
-    pub fn l2_norm_sqd(&self) -> f64 {
+    pub fn l2_norm_sqd(&self) -> T {
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     }
 
     pub fn cross_prod(&self, other: Self) -> Self {
-        let x: f64 = self.x() * other.y() - self.y() * other.x();
-        let y: f64 = self.y() * other.z() - self.z() * other.y();
-        let z: f64 = self.z() * other.x() - self.x() * other.z();
+        let x: T = self.x() * other.y() - self.y() * other.x();
+        let y: T = self.y() * other.z() - self.z() * other.y();
+        let z: T = self.z() * other.x() - self.x() * other.z();
         Self::new([x, y, z])
     }
 
-    pub fn dot_prod(&self, other: Self) -> f64 {
+    pub fn dot_prod(&self, other: Self) -> T {
         self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
     }
 
-    pub fn cross_prod_magnitude_sqd(&self, other: Self) -> f64 {
+    pub fn cross_prod_magnitude_sqd(&self, other: Self) -> T {
         self.cross_prod(other).l2_norm_sqd()
     }
 
-    // fn rotated_by_3d(&self, _other: Self, _theta: f64) -> Self {
+    // fn rotated_by_3d(&self, _other: Self, _theta: T) -> Self {
     //     panic!("Reenable if we do 3d");
     //     // let c  = theta.cos();
     //     // let s = theta.sin();
@@ -97,7 +93,7 @@ impl XYZVec {
     // }
 }
 
-impl Add for XYZVec {
+impl<T: VecInner> Add for XYZVec<T> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -108,7 +104,7 @@ impl Add for XYZVec {
     }
 }
 
-impl AddAssign for XYZVec {
+impl<T: VecInner> AddAssign for XYZVec<T> {
     fn add_assign(&mut self, other: Self) {
         self.inner[0] += other.x();
         self.inner[1] += other.y();
@@ -116,7 +112,7 @@ impl AddAssign for XYZVec {
     }
 }
 
-impl Sub for XYZVec {
+impl<T: VecInner> Sub for XYZVec<T> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
@@ -127,7 +123,7 @@ impl Sub for XYZVec {
     }
 }
 
-impl SubAssign for XYZVec {
+impl<T: VecInner> SubAssign for XYZVec<T> {
     fn sub_assign(&mut self, other: Self) {
         self.inner[0] -= other.x();
         self.inner[1] -= other.y();
@@ -135,14 +131,34 @@ impl SubAssign for XYZVec {
     }
 }
 
-impl fmt::Debug for XYZVec {
+impl<T: VecInner> fmt::Debug for XYZVec<T> {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "({:?}, {:?}, {:?})", self.x(), self.y(), self.z())
     }
 }
 
-impl fmt::Display for XYZVec {
+impl<T: VecInner> fmt::Display for XYZVec<T> {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "({:.3}, {:.3}, {:.3})", self.x(), self.y(), self.z())
+    }
+}
+
+impl XYZVec<f32> {
+    pub fn l2_norm(&self) -> f32 {
+        self.l2_norm_sqd().sqrt()
+    }
+
+    pub fn zeroes() -> Self {
+        Self { inner: [0.0; 3] }
+    }
+}
+
+impl XYZVec<f64> {
+    pub fn l2_norm(&self) -> f64 {
+        self.l2_norm_sqd().sqrt()
+    }
+
+    pub fn zeroes() -> Self {
+        Self { inner: [0.0; 3] }
     }
 }
