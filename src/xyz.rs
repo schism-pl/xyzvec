@@ -7,11 +7,11 @@ use std::{
 // TODO: simd support?
 
 #[derive(Clone, PartialEq, Copy)]
-pub struct XYZArr {
+pub struct XYZVec {
     inner: [f64; 3],
 }
 
-impl XYZArr {
+impl XYZVec {
     pub fn new(inner: [f64; 3]) -> Self {
         Self { inner }
     }
@@ -97,7 +97,7 @@ impl XYZArr {
     // }
 }
 
-impl Add for XYZArr {
+impl Add for XYZVec {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -108,7 +108,7 @@ impl Add for XYZArr {
     }
 }
 
-impl AddAssign for XYZArr {
+impl AddAssign for XYZVec {
     fn add_assign(&mut self, other: Self) {
         self.inner[0] += other.x();
         self.inner[1] += other.y();
@@ -116,7 +116,7 @@ impl AddAssign for XYZArr {
     }
 }
 
-impl Sub for XYZArr {
+impl Sub for XYZVec {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
@@ -127,7 +127,7 @@ impl Sub for XYZArr {
     }
 }
 
-impl SubAssign for XYZArr {
+impl SubAssign for XYZVec {
     fn sub_assign(&mut self, other: Self) {
         self.inner[0] -= other.x();
         self.inner[1] -= other.y();
@@ -135,13 +135,13 @@ impl SubAssign for XYZArr {
     }
 }
 
-impl fmt::Debug for XYZArr {
+impl fmt::Debug for XYZVec {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "({:?}, {:?}, {:?})", self.x(), self.y(), self.z())
     }
 }
 
-impl fmt::Display for XYZArr {
+impl fmt::Display for XYZVec {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "({:.3}, {:.3}, {:.3})", self.x(), self.y(), self.z())
     }
