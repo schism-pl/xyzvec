@@ -101,19 +101,18 @@ impl Add for XYZArr {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        let mut r = Self::zeroes();
-        r.inner[0] = self.inner[0] + other.inner[0];
-        r.inner[1] = self.inner[1] + other.inner[1];
-        r.inner[2] = self.inner[2] + other.inner[2];
-        r
+        let x = self.x() + other.x();
+        let y = self.y() + other.y();
+        let z = self.z() + other.z();
+        Self::new([x, y, z])
     }
 }
 
 impl AddAssign for XYZArr {
     fn add_assign(&mut self, other: Self) {
-        self.inner[0] += other.inner[0];
-        self.inner[1] += other.inner[1];
-        self.inner[2] += other.inner[2];
+        self.inner[0] += other.x();
+        self.inner[1] += other.y();
+        self.inner[2] += other.z();
     }
 }
 
@@ -121,19 +120,18 @@ impl Sub for XYZArr {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        let mut r = Self::zeroes();
-        r.inner[0] = self.inner[0] - other.inner[0];
-        r.inner[1] = self.inner[1] - other.inner[1];
-        r.inner[2] = self.inner[2] - other.inner[2];
-        r
+        let x = self.x() - other.x();
+        let y = self.y() - other.y();
+        let z = self.z() - other.z();
+        Self::new([x, y, z])
     }
 }
 
 impl SubAssign for XYZArr {
     fn sub_assign(&mut self, other: Self) {
-        self.inner[0] -= other.inner[0];
-        self.inner[1] -= other.inner[1];
-        self.inner[2] -= other.inner[2];
+        self.inner[0] -= other.x();
+        self.inner[1] -= other.y();
+        self.inner[2] -= other.z();
     }
 }
 

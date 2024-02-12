@@ -108,19 +108,16 @@ impl Add for XYArr {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        let mut r = XYArr::zeroes();
-        for idx in 0..2 {
-            r.inner[idx] = self.inner[idx] + other.inner[idx];
-        }
-        r
+        let x = self.x() + other.x();
+        let y = self.y() + other.y();
+        Self::new([x, y])
     }
 }
 
 impl AddAssign for XYArr {
     fn add_assign(&mut self, other: XYArr) {
-        for idx in 0..2 {
-            self.inner[idx] += other.inner[idx];
-        }
+        self.inner[0] += other.x();
+        self.inner[1] += other.y()
     }
 }
 
@@ -128,19 +125,16 @@ impl Sub for XYArr {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        let mut r = XYArr::zeroes();
-        for idx in 0..2 {
-            r.inner[idx] = self.inner[idx] - other.inner[idx];
-        }
-        r
+        let x = self.x() - other.x();
+        let y = self.y() - other.y();
+        Self::new([x, y])
     }
 }
 
 impl SubAssign for XYArr {
     fn sub_assign(&mut self, other: XYArr) {
-        for idx in 0..2 {
-            self.inner[idx] -= other.inner[idx];
-        }
+        self.inner[0] -= other.x();
+        self.inner[1] -= other.y()
     }
 }
 
