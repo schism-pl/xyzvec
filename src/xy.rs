@@ -47,6 +47,10 @@ impl<T: VecInner> XYVec<T> {
         self.x() * other.y() - self.y() * other.x()
     }
 
+    pub fn cross_prod_sqd(&self, other: Self) -> T {
+        self.cross_prod(other) * self.cross_prod(other)
+    }
+
     pub fn dot_prod(&self, other: Self) -> T {
         self.x() * other.x() + self.y() * other.y()
     }
