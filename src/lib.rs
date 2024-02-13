@@ -5,7 +5,7 @@ pub mod xyz;
 // TODO: checked operations
 // TODO: fixed point support
 // TODO: SIMD support
-// TODO: approximate equality for fixed point? 
+// TODO: approximate equality for fixed point?
 
 use std::{
     fmt::{Debug, Display},

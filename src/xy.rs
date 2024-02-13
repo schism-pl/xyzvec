@@ -249,7 +249,7 @@ mod tests {
     }
 
     #[test]
-    fn scale_fixed() {        
+    fn scale_fixed() {
         let v = XYVec::new([I28F4::from_num(1.0), I28F4::from_num(-0.5)]);
         let scaled_v = v.scale_by(I28F4::from_num(5.0));
         assert_eq!(scaled_v.x(), 5.0);
@@ -294,5 +294,4 @@ mod tests {
         let w = XYVec::new([I28F4::from_num(-2.0), I28F4::from_num(-0.0)]);
         assert_eq!(v.dot_prod(w), -2.0);
     }
-
 }
