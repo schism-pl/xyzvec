@@ -159,6 +159,7 @@ impl XYZVec<f64> {
 mod tests {
     use crate::XYZVec;
     use approx::assert_relative_eq;
+    use fixed::types::I28F4;
 
     #[test]
     fn scale_f64() {
@@ -267,4 +268,60 @@ mod tests {
         let w = XYZVec::new([-2.0f32, 0.5f32, 0.0f32]);
         assert_relative_eq!(v.dot_prod(w), -1.0);
     }
+
+
+    #[test]
+    fn scale_fixed() {        
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        let scaled_v = v.scale_by(I28F4::from_num(5.0));
+        assert_eq!(scaled_v.x(), 5.0);
+        assert_eq!(scaled_v.y(), 10.0);
+        assert_eq!(scaled_v.z(), -2.5);
+    }
+
+    #[test]
+    fn div_fixed() {
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        let scaled_v = v.div_by(I28F4::from_num(0.25));
+        assert_eq!(scaled_v.x(), 4.0);
+        assert_eq!(scaled_v.y(), 8.0);
+        assert_eq!(scaled_v.z(), -2.0);
+    }
+
+    #[test]
+    fn translate_fixed() {
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        let scaled_v = v.translate_by(I28F4::from_num(1.0), I28F4::from_num(1.0), I28F4::from_num(1.0));
+        assert_eq!(scaled_v.x(), 2.0);
+        assert_eq!(scaled_v.y(), 3.0);
+        assert_eq!(scaled_v.z(), 0.5);
+    }
+
+    #[test]
+    fn norms_fixed() {
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        assert_eq!(v.l1_norm(), 2.5);
+        assert_eq!(v.l2_norm_sqd(), 5.25);
+        //assert_relative_eq!(v.l2_norm(), 1.25f64.sqrt()); // not currently supported on fixed point
+    }
+
+    #[test]
+    fn cross_prod_fixed() {
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        let w = XYZVec::new([I28F4::from_num(-2.0), I28F4::from_num(0.5), I28F4::from_num(-0.0)]);
+        let cross_prod = v.cross_prod(w);
+        assert_eq!(cross_prod.x(), 4.5);
+        assert_eq!(cross_prod.y(), 0.25);
+        assert_eq!(cross_prod.z(), 1.0);
+        let mag_sqd = v.cross_prod_magnitude_sqd(w);
+        assert_eq!(mag_sqd, 21.3125);
+    }
+
+    #[test]
+    fn dot_prod_fixed() {
+        let v = XYZVec::new([I28F4::from_num(1.0), I28F4::from_num(2.0), I28F4::from_num(-0.5)]);
+        let w = XYZVec::new([I28F4::from_num(-2.0), I28F4::from_num(0.5), I28F4::from_num(-0.0)]);
+        assert_eq!(v.dot_prod(w), -1.0);
+    }
+
 }
