@@ -5,9 +5,6 @@ use std::{
 
 use crate::VecInner;
 
-// TODO: parameterize by floating point length / fixed-point
-// TODO: simd support?
-
 #[derive(Clone, PartialEq, Copy)]
 pub struct XYZVec<T> {
     inner: [T; 3],
@@ -43,7 +40,6 @@ impl<T: VecInner> XYZVec<T> {
         let z = self.z() / d;
         Self::new([x, y, z])
     }
-
     pub fn translated_by(&self, x: T, y: T, z: T) -> Self {
         let new_x = self.x() + x;
         let new_y = self.y() + y;
@@ -57,13 +53,11 @@ impl<T: VecInner> XYZVec<T> {
         self.x() + self.y() + self.z()
     }
 
-    // pub fn l2_norm(&self) -> T {
-    //     self.l2_norm_sqd().sqrt()
-    // }
-
     pub fn l2_norm_sqd(&self) -> T {
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     }
+
+    // -----------------------------
 
     pub fn cross_prod(&self, other: Self) -> Self {
         let x: T = self.x() * other.y() - self.y() * other.x();
@@ -162,3 +156,49 @@ impl XYZVec<f64> {
 //     // let z = ((self.z() - other.z()*cross_prod))*(c - 1.0) + (other.y()*self.x() - other.x()*self.y())*s;
 //     // Self::new([x,y,z])
 // }
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use crate::XYZVec;
+    use approx::assert_relative_eq;
+
+    #[test]
+    fn scale_f64() {
+        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+        let scaled_v = v.scale_by(5.0);
+        assert_relative_eq!(scaled_v.x(), 5.0);
+        assert_relative_eq!(scaled_v.y(), 10.0);
+        assert_relative_eq!(scaled_v.z(), -2.5);
+    }
+
+    #[test]
+    fn div_f64() {
+        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+        let scaled_v = v.div_by(0.2);
+        assert_relative_eq!(scaled_v.x(), 5.0);
+        assert_relative_eq!(scaled_v.y(), 10.0);
+        assert_relative_eq!(scaled_v.z(), -2.5);
+    }
+
+    #[test]
+    fn translate_f64() {
+        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+        let scaled_v = v.translated_by(1.0, 1.0, 1.0);
+        assert_relative_eq!(scaled_v.x(), 2.0);
+        assert_relative_eq!(scaled_v.y(), 3.0);
+        assert_relative_eq!(scaled_v.z(), 0.5);
+    }
+
+    #[test]
+    fn norms_f64() {
+        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+        assert_relative_eq!(v.l1_norm(), 2.5);
+        assert_relative_eq!(v.l2_norm_sqd(), 5.25);
+        assert_relative_eq!(v.l2_norm(), 5.25f64.sqrt());
+    }
+
+
+}

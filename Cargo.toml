@@ -13,3 +13,6 @@ description = "Statically allocated fixed-size vectors for working in 2 and 3 di
 
 [dependencies]
 fmt = "0.1.0"
+
+[dev-dependencies]
+approx = "0.5.1"

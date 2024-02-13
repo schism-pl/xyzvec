@@ -1,7 +1,11 @@
 pub mod xy;
 pub mod xyz;
-// TODO: docs.rs
+// TODO: docs.rs / comments
 // TODO: tests with f64, f32, fixed point
+// TODO: checked operations
+// TODO: fixed point support
+// TODO: SIMD support
+
 use std::{
     fmt::{Debug, Display},
     ops::{Add, AddAssign, Div, Mul, Sub, SubAssign},
