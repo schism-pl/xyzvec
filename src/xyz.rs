@@ -40,7 +40,7 @@ impl<T: VecInner> XYZVec<T> {
         let z = self.z() / d;
         Self::new([x, y, z])
     }
-    pub fn translated_by(&self, x: T, y: T, z: T) -> Self {
+    pub fn translate_by(&self, x: T, y: T, z: T) -> Self {
         let new_x = self.x() + x;
         let new_y = self.y() + y;
         let new_z = self.z() + z;
@@ -181,7 +181,7 @@ mod tests {
     #[test]
     fn translate_f64() {
         let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let scaled_v = v.translated_by(1.0, 1.0, 1.0);
+        let scaled_v = v.translate_by(1.0, 1.0, 1.0);
         assert_relative_eq!(scaled_v.x(), 2.0);
         assert_relative_eq!(scaled_v.y(), 3.0);
         assert_relative_eq!(scaled_v.z(), 0.5);
@@ -235,7 +235,7 @@ mod tests {
     #[test]
     fn translate_f32() {
         let v = XYZVec::new([1.0f32, 2.0f32, -0.5f32]);
-        let scaled_v = v.translated_by(1.0, 1.0, 1.0);
+        let scaled_v = v.translate_by(1.0, 1.0, 1.0);
         assert_relative_eq!(scaled_v.x(), 2.0);
         assert_relative_eq!(scaled_v.y(), 3.0);
         assert_relative_eq!(scaled_v.z(), 0.5);
