@@ -1,6 +1,6 @@
 pub mod xy;
 pub mod xyz;
-// TODO: docs.rs / comments
+// TODO: comments / doctest
 // TODO: tests with f64, f32, fixed point
 // TODO: checked operations
 // TODO: fixed point support
