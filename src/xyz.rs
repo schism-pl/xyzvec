@@ -15,18 +15,31 @@ impl<T: VecInner> XYZVec<T> {
         Self { inner }
     }
 
+    /// `x` component of XYZVec
     pub fn x(&self) -> T {
         self.inner[0]
     }
 
+    /// `y` component of XYZVec
     pub fn y(&self) -> T {
         self.inner[1]
     }
 
+    /// `z` component of XYZVec
     pub fn z(&self) -> T {
         self.inner[2]
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let scaled_v = v.scale_by(5.0);
+    ///    assert_relative_eq!(scaled_v.x(), 5.0);
+    ///    assert_relative_eq!(scaled_v.y(), 10.0);
+    ///    assert_relative_eq!(scaled_v.z(), -2.5);
+    /// ```
     pub fn scale_by(&self, d: T) -> Self {
         let x = self.x() * d;
         let y = self.y() * d;
@@ -34,12 +47,33 @@ impl<T: VecInner> XYZVec<T> {
         Self::new([x, y, z])
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let scaled_v = v.div_by(0.2);
+    ///    assert_relative_eq!(scaled_v.x(), 5.0);
+    ///    assert_relative_eq!(scaled_v.y(), 10.0);
+    ///    assert_relative_eq!(scaled_v.z(), -2.5);
+    /// ```
     pub fn div_by(&self, d: T) -> Self {
         let x = self.x() / d;
         let y = self.y() / d;
         let z = self.z() / d;
         Self::new([x, y, z])
     }
+
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let scaled_v = v.translate_by(1.0, 1.0, 1.0);
+    ///    assert_relative_eq!(scaled_v.x(), 2.0);
+    ///    assert_relative_eq!(scaled_v.y(), 3.0);
+    ///    assert_relative_eq!(scaled_v.z(), 0.5);
+    /// ```
     pub fn translate_by(&self, x: T, y: T, z: T) -> Self {
         let new_x = self.x() + x;
         let new_y = self.y() + y;
@@ -49,14 +83,39 @@ impl<T: VecInner> XYZVec<T> {
         }
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    assert_relative_eq!(v.l1_norm(), 2.5);
+    /// ```
     pub fn l1_norm(&self) -> T {
         self.x() + self.y() + self.z()
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    assert_relative_eq!(v.l2_norm_sqd(), 5.25);
+    /// ```
     pub fn l2_norm_sqd(&self) -> T {
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let w = XYZVec::new([-2.0f64, 0.5f64, 0.0f64]);
+    ///    let cross_prod = v.cross_prod(w);
+    ///    assert_relative_eq!(cross_prod.x(), 4.5);
+    ///    assert_relative_eq!(cross_prod.y(), 0.25);
+    ///    assert_relative_eq!(cross_prod.z(), 1.0);
+    /// ```
     pub fn cross_prod(&self, other: Self) -> Self {
         let x: T = self.x() * other.y() - self.y() * other.x();
         let y: T = self.y() * other.z() - self.z() * other.y();
@@ -64,10 +123,27 @@ impl<T: VecInner> XYZVec<T> {
         Self::new([x, y, z])
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let w = XYZVec::new([-2.0f64, 0.5f64, 0.0f64]);
+    ///    assert_relative_eq!(v.dot_prod(w), -1.0);
+    /// ```
     pub fn dot_prod(&self, other: Self) -> T {
         self.x() * other.x() + self.y() * other.y() + self.z() * other.z()
     }
 
+    /// ```   
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;
+    ///
+    ///    let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///    let w = XYZVec::new([-2.0f64, 0.5f64, 0.0f64]);
+    ///    let mag_sqd = v.cross_prod_magnitude_sqd(w);
+    ///    assert_relative_eq!(mag_sqd, 21.3125);
+    /// ```
     pub fn cross_prod_magnitude_sqd(&self, other: Self) -> T {
         self.cross_prod(other).l2_norm_sqd()
     }
@@ -160,60 +236,6 @@ mod tests {
     use crate::XYZVec;
     use approx::assert_relative_eq;
     use fixed::types::I28F4;
-
-    #[test]
-    fn scale_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let scaled_v = v.scale_by(5.0);
-        assert_relative_eq!(scaled_v.x(), 5.0);
-        assert_relative_eq!(scaled_v.y(), 10.0);
-        assert_relative_eq!(scaled_v.z(), -2.5);
-    }
-
-    #[test]
-    fn div_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let scaled_v = v.div_by(0.2);
-        assert_relative_eq!(scaled_v.x(), 5.0);
-        assert_relative_eq!(scaled_v.y(), 10.0);
-        assert_relative_eq!(scaled_v.z(), -2.5);
-    }
-
-    #[test]
-    fn translate_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let scaled_v = v.translate_by(1.0, 1.0, 1.0);
-        assert_relative_eq!(scaled_v.x(), 2.0);
-        assert_relative_eq!(scaled_v.y(), 3.0);
-        assert_relative_eq!(scaled_v.z(), 0.5);
-    }
-
-    #[test]
-    fn norms_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        assert_relative_eq!(v.l1_norm(), 2.5);
-        assert_relative_eq!(v.l2_norm_sqd(), 5.25);
-        assert_relative_eq!(v.l2_norm(), 5.25f64.sqrt());
-    }
-
-    #[test]
-    fn cross_prod_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let w = XYZVec::new([-2.0f64, 0.5f64, 0.0f64]);
-        let cross_prod = v.cross_prod(w);
-        assert_relative_eq!(cross_prod.x(), 4.5);
-        assert_relative_eq!(cross_prod.y(), 0.25);
-        assert_relative_eq!(cross_prod.z(), 1.0);
-        let mag_sqd = v.cross_prod_magnitude_sqd(w);
-        assert_relative_eq!(mag_sqd, 21.3125);
-    }
-
-    #[test]
-    fn dot_prod_f64() {
-        let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
-        let w = XYZVec::new([-2.0f64, 0.5f64, 0.0f64]);
-        assert_relative_eq!(v.dot_prod(w), -1.0);
-    }
 
     #[test]
     fn scale_f32() {

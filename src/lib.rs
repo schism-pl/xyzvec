@@ -6,6 +6,7 @@ pub mod xyz;
 // TODO: fixed point support
 // TODO: SIMD support
 // TODO: approximate equality for fixed point?
+// TODO: add relative_eq for tuples for simpler assertions
 
 use std::{
     fmt::{Debug, Display},
