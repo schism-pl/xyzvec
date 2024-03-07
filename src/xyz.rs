@@ -147,6 +147,32 @@ impl<T: VecInner> XYZVec<T> {
     pub fn cross_prod_magnitude_sqd(&self, other: Self) -> T {
         self.cross_prod(other).l2_norm_sqd()
     }
+
+    ///```
+    ///    use xyzvec::XYZVec;
+    ///    use approx::assert_relative_eq;    
+    //
+    //     let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    //     assert_relative_eq!(v.sum(), 2.5);
+    //
+    // ```
+    pub fn sum(&self) -> T {
+        self.x() + self.y() + self.z()
+    }
+
+    /// ```
+    ///     use xyzvec::XYZVec;
+    ///     use approx::assert_relative_eq;    
+    ///     
+    ///     let v = XYZVec::new([1.0f64, 2.0f64, -0.5f64]);
+    ///     let v2: XYZVec<f64> = v.iter().map(|a| a + 1.0).collect();
+    ///     assert_relative_eq!(v2.x(), 2.0);
+    ///     assert_relative_eq!(v2.y(), 3.0);
+    ///     assert_relative_eq!(v2.z(), 0.5);
+    /// ```
+    pub fn iter(&self) -> XYZIterator<T> {
+        XYZIterator::new(self)
+    }
 }
 
 impl<T: VecInner> Add for XYZVec<T> {
@@ -230,6 +256,42 @@ impl XYZVec<f64> {
 //     // let z = ((self.z() - other.z()*cross_prod))*(c - 1.0) + (other.y()*self.x() - other.x()*self.y())*s;
 //     // Self::new([x,y,z])
 // }
+
+pub struct XYZIterator<'a, T: VecInner> {
+    vec: &'a XYZVec<T>,
+    index: u8,
+}
+
+impl<'a, T: VecInner> XYZIterator<'a, T> {
+    fn new(vec: &'a XYZVec<T>) -> Self {
+        Self { vec, index: 0 }
+    }
+}
+
+impl<'a, T: VecInner> Iterator for XYZIterator<'a, T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.index += 1;
+        match self.index {
+            1 => Some(self.vec.x()),
+            2 => Some(self.vec.y()),
+            3 => Some(self.vec.z()),
+            _ => None,
+        }
+    }
+}
+
+/// Build XYVec from iterator of size two.
+/// TODO: check for errors better
+impl<T: VecInner> FromIterator<T> for XYZVec<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut i = iter.into_iter();
+        let x = i.next().unwrap();
+        let y = i.next().unwrap();
+        let z = i.next().unwrap();
+        XYZVec::new([x, y, z])
+    }
+}
 
 #[cfg(test)]
 mod tests {

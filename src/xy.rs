@@ -129,6 +129,31 @@ impl<T: VecInner> XYVec<T> {
             inner: [new_x, new_y],
         }
     }
+
+    ///```
+    ///    use xyzvec::XYVec;
+    ///    use approx::assert_relative_eq;    
+    //
+    //     let v = XYVec::new([1.0f64, -0.5f64]);
+    //     assert_relative_eq!(v.sum(), 0.5);
+    //
+    // ```
+    pub fn sum(&self) -> T {
+        self.x() + self.y()
+    }
+
+    /// ```
+    ///     use xyzvec::XYVec;
+    ///     use approx::assert_relative_eq;    
+    ///     
+    ///     let v = XYVec::new([1.0f64, -0.5f64]);
+    ///     let v2: XYVec<f64> = v.iter().map(|a| a + 1.0).collect();
+    ///     assert_relative_eq!(v2.x(), 2.0);
+    ///     assert_relative_eq!(v2.y(), 0.5);
+    /// ```
+    pub fn iter(&self) -> XYIterator<T> {
+        XYIterator::new(self)
+    }
 }
 
 impl<T: VecInner> Add for XYVec<T> {
@@ -212,6 +237,40 @@ impl XYVec<f64> {
         let x = (self.x() * c - self.y() * s) - self.x();
         let y = self.x() * s + self.y() * c - self.y();
         Self::new([x, y])
+    }
+}
+
+pub struct XYIterator<'a, T: VecInner> {
+    vec: &'a XYVec<T>,
+    index: u8,
+}
+
+impl<'a, T: VecInner> XYIterator<'a, T> {
+    fn new(vec: &'a XYVec<T>) -> Self {
+        Self { vec, index: 0 }
+    }
+}
+
+impl<'a, T: VecInner> Iterator for XYIterator<'a, T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.index += 1;
+        match self.index {
+            1 => Some(self.vec.x()),
+            2 => Some(self.vec.y()),
+            _ => None,
+        }
+    }
+}
+
+/// Build XYVec from iterator of size two.
+/// TODO: check for errors better
+impl<T: VecInner> FromIterator<T> for XYVec<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut i = iter.into_iter();
+        let x = i.next().unwrap();
+        let y = i.next().unwrap();
+        XYVec::new([x, y])
     }
 }
 
