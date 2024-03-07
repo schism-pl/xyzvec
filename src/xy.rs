@@ -151,8 +151,9 @@ impl<T: VecInner> XYVec<T> {
     ///     assert_relative_eq!(v2.x(), 2.0);
     ///     assert_relative_eq!(v2.y(), 0.5);
     /// ```
-    pub fn iter(&self) -> XYIterator<T> {
-        XYIterator::new(self)
+    ///
+    pub fn iter(&self) -> std::slice::Iter<T> {
+        self.inner.iter()
     }
 }
 
@@ -237,29 +238,6 @@ impl XYVec<f64> {
         let x = (self.x() * c - self.y() * s) - self.x();
         let y = self.x() * s + self.y() * c - self.y();
         Self::new([x, y])
-    }
-}
-
-pub struct XYIterator<'a, T: VecInner> {
-    vec: &'a XYVec<T>,
-    index: u8,
-}
-
-impl<'a, T: VecInner> XYIterator<'a, T> {
-    fn new(vec: &'a XYVec<T>) -> Self {
-        Self { vec, index: 0 }
-    }
-}
-
-impl<'a, T: VecInner> Iterator for XYIterator<'a, T> {
-    type Item = T;
-    fn next(&mut self) -> Option<Self::Item> {
-        self.index += 1;
-        match self.index {
-            1 => Some(self.vec.x()),
-            2 => Some(self.vec.y()),
-            _ => None,
-        }
     }
 }
 

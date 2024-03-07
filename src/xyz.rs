@@ -170,8 +170,8 @@ impl<T: VecInner> XYZVec<T> {
     ///     assert_relative_eq!(v2.y(), 3.0);
     ///     assert_relative_eq!(v2.z(), 0.5);
     /// ```
-    pub fn iter(&self) -> XYZIterator<T> {
-        XYZIterator::new(self)
+    pub fn iter(&self) -> std::slice::Iter<T> {
+        self.inner.iter()
     }
 }
 
@@ -256,30 +256,6 @@ impl XYZVec<f64> {
 //     // let z = ((self.z() - other.z()*cross_prod))*(c - 1.0) + (other.y()*self.x() - other.x()*self.y())*s;
 //     // Self::new([x,y,z])
 // }
-
-pub struct XYZIterator<'a, T: VecInner> {
-    vec: &'a XYZVec<T>,
-    index: u8,
-}
-
-impl<'a, T: VecInner> XYZIterator<'a, T> {
-    fn new(vec: &'a XYZVec<T>) -> Self {
-        Self { vec, index: 0 }
-    }
-}
-
-impl<'a, T: VecInner> Iterator for XYZIterator<'a, T> {
-    type Item = T;
-    fn next(&mut self) -> Option<Self::Item> {
-        self.index += 1;
-        match self.index {
-            1 => Some(self.vec.x()),
-            2 => Some(self.vec.y()),
-            3 => Some(self.vec.z()),
-            _ => None,
-        }
-    }
-}
 
 /// Build XYVec from iterator of size two.
 /// TODO: check for errors better
