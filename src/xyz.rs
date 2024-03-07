@@ -1,6 +1,6 @@
 use std::{
     fmt::{self, Formatter},
-    ops::{Add, AddAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Neg, Sub, SubAssign},
 };
 
 use crate::VecInner;
@@ -213,6 +213,14 @@ impl<T: VecInner> SubAssign for XYZVec<T> {
     }
 }
 
+impl<T: VecInner> Neg for XYZVec<T> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Self::new([-self.x(), -self.y(), -self.z()])
+    }
+}
+
 impl<T: VecInner> fmt::Debug for XYZVec<T> {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "({:?}, {:?}, {:?})", self.x(), self.y(), self.z())
@@ -327,6 +335,14 @@ mod tests {
         let v = XYZVec::new([1.0f32, 2.0f32, -0.5f32]);
         let w = XYZVec::new([-2.0f32, 0.5f32, 0.0f32]);
         assert_relative_eq!(v.dot_prod(w), -1.0);
+    }
+
+    #[test]
+    fn neg_f32() {
+        let v = XYZVec::new([1.0f32, 2.0f32, -0.5f32]);
+        assert_relative_eq!(-v.x(), -1.0);
+        assert_relative_eq!(-v.y(), -2.0);
+        assert_relative_eq!(-v.z(), 0.5);
     }
 
     #[test]

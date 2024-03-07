@@ -10,7 +10,7 @@ pub mod xyz;
 
 use std::{
     fmt::{Debug, Display},
-    ops::{Add, AddAssign, Div, Mul, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, Mul, Neg, Sub, SubAssign},
 };
 
 pub use xy::XYVec;
@@ -28,6 +28,7 @@ pub trait VecInner:
     + SubAssign
     + Mul<Output = Self>
     + Div<Output = Self>
+    + Neg<Output = Self>
 {
 }
 impl<
@@ -41,7 +42,8 @@ impl<
             + Sub<Output = Self>
             + SubAssign
             + Mul<Output = Self>
-            + Div<Output = Self>,
+            + Div<Output = Self>
+            + Neg<Output = Self>,
     > VecInner for V
 {
 }
