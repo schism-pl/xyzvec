@@ -9,10 +9,13 @@ readme = "README.md"
 description = "Statically allocated fixed-size vectors for working in 2 and 3 dimensions"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+cordic = ["dep:cordic"]
 
 [dependencies]
+cordic = { version = "0.1.5", optional = true }
 fmt = "0.1.0"
+fixed = "1.25.1" # TODO: can probably be optional
 
 [dev-dependencies]
 approx = "0.5.1"
-fixed = "1.25.1"

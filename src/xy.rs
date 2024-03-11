@@ -1,9 +1,9 @@
+use crate::VecInner;
+use fixed::FixedI64;
 use std::{
     fmt::{self, Formatter},
     ops::{Add, AddAssign, Neg, Sub, SubAssign},
 };
-
-use crate::VecInner;
 
 #[derive(Clone, PartialEq, Copy)]
 pub struct XYVec<T> {
@@ -242,6 +242,36 @@ impl XYVec<f64> {
     pub fn rotated_by(&self, theta: f64) -> Self {
         let c = theta.cos();
         let s = theta.sin();
+
+        let x = (self.x() * c - self.y() * s) - self.x();
+        let y = self.x() * s + self.y() * c - self.y();
+        Self::new([x, y])
+    }
+}
+
+impl<Frac> XYVec<FixedI64<Frac>> {
+    pub fn zeroes() -> Self {
+        Self {
+            inner: [fixed::FixedI64::ZERO; 2],
+        }
+    }
+}
+
+#[cfg(feature = "cordic")]
+use crate::CordicPhantomTrait;
+#[cfg(feature = "cordic")]
+use cordic::{cos, sin, sqrt, CordicNumber};
+//use  fixed::types::extra::{LeEqU64, LeEqU62, LeEqU61};
+// use fixed::{IsLessOrEqual, True, U64, U64, U61};
+#[cfg(feature = "cordic")]
+impl<T: CordicNumber + CordicPhantomTrait + fmt::Display + fmt::Debug> XYVec<T> {
+    pub fn l2_norm(&self) -> T {
+        sqrt(self.l2_norm_sqd())
+    }
+
+    pub fn rotated_by(&self, theta: T) -> Self {
+        let c = cos(theta);
+        let s = sin(theta);
 
         let x = (self.x() * c - self.y() * s) - self.x();
         let y = self.x() * s + self.y() * c - self.y();

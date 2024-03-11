@@ -16,6 +16,12 @@ use std::{
 pub use xy::XYVec;
 pub use xyz::XYZVec;
 
+pub trait CordicPhantomTrait {}
+impl<Frac> CordicPhantomTrait for fixed::FixedI8<Frac> {}
+impl<Frac> CordicPhantomTrait for fixed::FixedI16<Frac> {}
+impl<Frac> CordicPhantomTrait for fixed::FixedI32<Frac> {}
+impl<Frac> CordicPhantomTrait for fixed::FixedI64<Frac> {}
+
 pub trait VecInner:
     Clone
     + Copy
