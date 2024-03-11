@@ -1,3 +1,4 @@
+use fixed::FixedI64;
 use std::{
     fmt::{self, Formatter},
     ops::{Add, AddAssign, Neg, Sub, SubAssign},
@@ -250,6 +251,25 @@ impl XYZVec<f64> {
 
     pub fn zeroes() -> Self {
         Self { inner: [0.0; 3] }
+    }
+}
+
+impl<Frac> XYZVec<FixedI64<Frac>> {
+    pub fn zeroes() -> Self {
+        Self {
+            inner: [fixed::FixedI64::ZERO; 3],
+        }
+    }
+}
+
+#[cfg(feature = "cordic")]
+use crate::CordicPhantomTrait;
+#[cfg(feature = "cordic")]
+use cordic::{sqrt, CordicNumber};
+#[cfg(feature = "cordic")]
+impl<T: CordicNumber + CordicPhantomTrait + fmt::Display + fmt::Debug> XYZVec<T> {
+    pub fn l2_norm(&self) -> T {
+        sqrt(self.l2_norm_sqd())
     }
 }
 
