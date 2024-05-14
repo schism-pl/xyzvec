@@ -155,6 +155,37 @@ impl<T: VecInner> XYVec<T> {
     pub fn iter(&self) -> std::slice::Iter<T> {
         self.inner.iter()
     }
+
+    ///     ```
+    ///     use xyzvec::XYVec;
+    ///     use approx::assert_relative_eq;    
+    ///     
+    ///     let v = XYVec::new([1.0f64, 2.0f64]);
+    ///     let w = XYVec::new([2.0f64, 4.0f64]);
+    ///     let projection = v.scalar_projected_on(w);
+    ///     assert_relative_eq!(projection, 0.5_f64);
+    ///     ```
+    pub fn scalar_projected_on(&self, other: Self) -> T {
+        let dot_ab = self.dot_prod(other);
+        let dot_bb = other.dot_prod(other);
+        dot_ab / dot_bb
+    }
+
+    //  `a` projected onto `b` = |(a*b)/(b*b)| * b
+    ///     ```
+    ///     use xyzvec::XYVec;
+    ///     use approx::assert_relative_eq;    
+    ///     
+    ///     let v = XYVec::new([1.0f64, 2.0f64]);
+    ///     let w = XYVec::new([2.0f64, 4.0f64]);
+    ///     let projection = v.projected_on(w);
+    ///     assert_relative_eq!(projection.x(), v.x());
+    ///     assert_relative_eq!(projection.y(), v.y());
+    ///     ```
+    pub fn projected_on(&self, other: Self) -> Self {
+        let scalar = self.scalar_projected_on(other);
+        other.scale_by(scalar)
+    }
 }
 
 impl<T: VecInner> Add for XYVec<T> {
