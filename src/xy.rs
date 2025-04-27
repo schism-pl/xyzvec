@@ -1,12 +1,11 @@
 use crate::VecInner;
 use fixed::FixedI64;
-use serde::{Deserialize, Serialize};
 use std::{
     fmt::{self, Formatter},
     ops::{Add, AddAssign, Neg, Sub, SubAssign},
 };
 
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, PartialEq, Copy)]
 pub struct XYVec<T> {
     inner: [T; 2],
