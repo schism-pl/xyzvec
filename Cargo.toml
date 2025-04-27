@@ -1,6 +1,6 @@
 [package]
 name = "xyzvec"
-version = "0.1.12"
+version = "0.1.13"
 edition = "2021"
 repository = "https://github.com/schism-pl/xyzvec"
 homepage = "https://github.com/schism-pl/xyzvec"
@@ -16,6 +16,7 @@ cordic = ["dep:cordic"]
 cordic = { version = "0.1.5", optional = true }
 fmt = "0.1.0"
 fixed = "1.25.1" # TODO: can probably be optional
+serde = { version = "1.0", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 approx = "0.5.1"

@@ -5,7 +5,9 @@ use std::{
 };
 
 use crate::VecInner;
+use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, PartialEq, Copy)]
 pub struct XYZVec<T> {
     inner: [T; 3],
