@@ -255,8 +255,8 @@ impl XYVec<f32> {
         let c = theta.cos();
         let s = theta.sin();
 
-        let x = self.x() * c + self.y() * s;
-        let y = -self.x() * s + self.y() * c;
+        let x = self.x() * c - self.y() * s;
+        let y = self.x() * s + self.y() * c;
         Self::new([x, y])
     }
 }
