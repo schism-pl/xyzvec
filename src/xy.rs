@@ -118,11 +118,11 @@ impl<T: VecInner> XYVec<T> {
     ///    use approx::assert_relative_eq;
     ///
     ///    let v = XYVec::new([1.0f64, -0.5f64]);
-    ///    let scaled_v = v.translated_by(1.0, 1.0);
+    ///    let scaled_v = v.translate_by(1.0, 1.0);
     ///    assert_relative_eq!(scaled_v.x(), 2.0);
     ///    assert_relative_eq!(scaled_v.y(), 0.5);
     /// ```
-    pub fn translated_by(&self, x: T, y: T) -> Self {
+    pub fn translate_by(&self, x: T, y: T) -> Self {
         let new_x = self.x() + x;
         let new_y = self.y() + y;
         Self {
@@ -255,8 +255,8 @@ impl XYVec<f32> {
         let c = theta.cos();
         let s = theta.sin();
 
-        let x = self.x() * c - self.y() * s;
-        let y = self.x() * s + self.y() * c;
+        let x = (self.x() * c - self.y() * s) - self.x();
+        let y = self.x() * s + self.y() * c - self.y();
         Self::new([x, y])
     }
 }
@@ -352,7 +352,7 @@ mod tests {
     #[test]
     fn translate_f32() {
         let v = XYVec::new([1.0f32, -0.5f32]);
-        let scaled_v = v.translated_by(1.0, 1.0);
+        let scaled_v = v.translate_by(1.0, 1.0);
         assert_relative_eq!(scaled_v.x(), 2.0);
         assert_relative_eq!(scaled_v.y(), 0.5);
     }
@@ -406,7 +406,7 @@ mod tests {
     #[test]
     fn translate_fixed() {
         let v = XYVec::new([I28F4::from_num(1.0), I28F4::from_num(-0.5)]);
-        let scaled_v = v.translated_by(I28F4::from_num(1.0), I28F4::from_num(1.0));
+        let scaled_v = v.translate_by(I28F4::from_num(1.0), I28F4::from_num(1.0));
         assert_eq!(scaled_v.x(), 2.0);
         assert_eq!(scaled_v.y(), 0.5);
     }
