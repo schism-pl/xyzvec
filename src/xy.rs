@@ -274,8 +274,8 @@ impl XYVec<f64> {
         let c = theta.cos();
         let s = theta.sin();
 
-        let x = self.x() * c - self.y() * s;
-        let y = self.x() * s + self.y() * c;
+        let x = (self.x() * c - self.y() * s) - self.x();
+        let y = self.x() * s + self.y() * c - self.y();
         Self::new([x, y])
     }
 }
@@ -304,8 +304,8 @@ impl<T: CordicNumber + CordicPhantomTrait + fmt::Display + fmt::Debug> XYVec<T> 
         let c = cos(theta);
         let s = sin(theta);
 
-        let x = self.x() * c - self.y() * s;
-        let y = self.x() * s + self.y() * c;
+        let x = (self.x() * c - self.y() * s) - self.x();
+        let y = self.x() * s + self.y() * c - self.y();
         Self::new([x, y])
     }
 }

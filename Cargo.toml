@@ -1,6 +1,6 @@
 [package]
 name = "xyzvec"
-version = "0.1.9"
+version = "0.1.8"
 edition = "2021"
 repository = "https://github.com/schism-pl/xyzvec"
 homepage = "https://github.com/schism-pl/xyzvec"
