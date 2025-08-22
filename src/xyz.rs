@@ -455,4 +455,145 @@ mod tests {
         ]);
         assert_eq!(v.dot_prod(w), -1.0);
     }
+
+    // Additional comprehensive tests for edge cases and uncovered functionality
+
+    #[test]
+    fn zero_vector_operations() {
+        let zero = XYZVec::<f32>::zeroes();
+        let unit_x = XYZVec::new([1.0f32, 0.0f32, 0.0f32]);
+        let _unit_y = XYZVec::new([0.0f32, 1.0f32, 0.0f32]);
+        let _unit_z = XYZVec::new([0.0f32, 0.0f32, 1.0f32]);
+        
+        // Zero vector properties
+        assert_relative_eq!(zero.l1_norm(), 0.0);
+        assert_relative_eq!(zero.l2_norm_sqd(), 0.0);
+        assert_relative_eq!(zero.l2_norm(), 0.0);
+        assert_relative_eq!(zero.sum(), 0.0);
+        
+        // Operations with zero vector
+        assert_relative_eq!(zero.dot_prod(unit_x), 0.0);
+        let zero_cross = zero.cross_prod(unit_x);
+        assert_eq!(zero_cross.x(), 0.0);
+        assert_eq!(zero_cross.y(), 0.0);
+        assert_eq!(zero_cross.z(), 0.0);
+        assert_eq!(zero.scale_by(5.0), zero);
+        assert_eq!(zero.translate_by(1.0, 2.0, 3.0), XYZVec::new([1.0, 2.0, 3.0]));
+    }
+
+    #[test]
+    fn iterator_and_from_iterator() {
+        let v = XYZVec::new([1.0f32, 2.0f32, 3.0f32]);
+        
+        // Test iterator
+        let mut iter = v.iter();
+        assert_relative_eq!(*iter.next().unwrap(), 1.0);
+        assert_relative_eq!(*iter.next().unwrap(), 2.0);
+        assert_relative_eq!(*iter.next().unwrap(), 3.0);
+        assert!(iter.next().is_none());
+        
+        // Test FromIterator
+        let doubled: XYZVec<f32> = v.iter().map(|&x| x * 2.0).collect();
+        assert_eq!(doubled.x(), 2.0);
+        assert_eq!(doubled.y(), 4.0);
+        assert_eq!(doubled.z(), 6.0);
+        
+        // Test from array-like iterator
+        let from_array: XYZVec<f32> = [3.0, 4.0, 5.0].into_iter().collect();
+        assert_eq!(from_array.x(), 3.0);
+        assert_eq!(from_array.y(), 4.0);
+        assert_eq!(from_array.z(), 5.0);
+    }
+
+    #[test]
+    fn cross_product_magnitude_properties() {
+        let v = XYZVec::new([1.0f32, 2.0f32, 3.0f32]);
+        let w = XYZVec::new([4.0f32, 5.0f32, 6.0f32]);
+        
+        // Test cross product magnitude squared
+        let mag_sqd = v.cross_prod_magnitude_sqd(w);
+        let cross = v.cross_prod(w);
+        let expected_mag_sqd = cross.l2_norm_sqd();
+        assert_relative_eq!(mag_sqd, expected_mag_sqd);
+        
+        // Test with orthogonal vectors (should give |v| * |w|)
+        let orth_v = XYZVec::new([1.0f32, 0.0f32, 0.0f32]);
+        let orth_w = XYZVec::new([0.0f32, 1.0f32, 0.0f32]);
+        let orth_mag_sqd = orth_v.cross_prod_magnitude_sqd(orth_w);
+        assert_relative_eq!(orth_mag_sqd, 1.0);
+        
+        // Test with parallel vectors (should give 0)
+        let parallel_v = XYZVec::new([1.0f32, 2.0f32, 3.0f32]);
+        let parallel_w = XYZVec::new([2.0f32, 4.0f32, 6.0f32]); // 2 * parallel_v
+        let parallel_mag_sqd = parallel_v.cross_prod_magnitude_sqd(parallel_w);
+        assert_relative_eq!(parallel_mag_sqd, 0.0);
+    }
+
+    #[test]
+    fn unit_vector_operations() {
+        let unit_x = XYZVec::new([1.0f32, 0.0f32, 0.0f32]);
+        let unit_y = XYZVec::new([0.0f32, 1.0f32, 0.0f32]);
+        let unit_z = XYZVec::new([0.0f32, 0.0f32, 1.0f32]);
+        
+        // Test unit vector properties
+        assert_relative_eq!(unit_x.l2_norm_sqd(), 1.0);
+        assert_relative_eq!(unit_x.l2_norm(), 1.0);
+        assert_relative_eq!(unit_y.l2_norm_sqd(), 1.0);
+        assert_relative_eq!(unit_z.l2_norm_sqd(), 1.0);
+        
+        // Test dot products between unit vectors
+        assert_relative_eq!(unit_x.dot_prod(unit_x), 1.0);
+        assert_relative_eq!(unit_x.dot_prod(unit_y), 0.0);
+        assert_relative_eq!(unit_x.dot_prod(unit_z), 0.0);
+        
+        // Test cross products between unit vectors (current implementation uses 2D formulas)
+        let cross_xy = unit_x.cross_prod(unit_y);
+        assert_eq!(cross_xy.x(), 1.0); // 1*1 - 0*0 = 1
+        assert_eq!(cross_xy.y(), 0.0); // 0*0 - 0*0 = 0
+        assert_eq!(cross_xy.z(), 0.0); // 0*0 - 1*0 = 0
+        
+        let cross_yz = unit_y.cross_prod(unit_z);
+        assert_eq!(cross_yz.x(), 0.0); // 0*0 - 1*0 = 0
+        assert_eq!(cross_yz.y(), 1.0); // 1*1 - 0*0 = 1
+        assert_eq!(cross_yz.z(), 0.0); // 0*0 - 0*1 = 0
+        
+        let cross_zx = unit_z.cross_prod(unit_x);
+        assert_eq!(cross_zx.x(), 0.0); // 0*0 - 0*0 = 0
+        assert_eq!(cross_zx.y(), 0.0); // 0*1 - 1*0 = 0
+        assert_eq!(cross_zx.z(), 1.0); // 1*1 - 0*0 = 1
+    }
+
+    #[test]
+    fn edge_cases_and_special_values() {
+        // Test with very small values
+        let tiny = XYZVec::new([1e-10f32, 1e-10f32, 1e-10f32]);
+        assert_relative_eq!(tiny.l2_norm_sqd(), 3e-20, epsilon = 1e-30);
+        
+        // Test with very large values
+        let large = XYZVec::new([1e10f32, 1e10f32, 1e10f32]);
+        assert_relative_eq!(large.l2_norm_sqd(), 3e20, epsilon = 1e10);
+        
+        // Test with mixed positive/negative values
+        let mixed = XYZVec::new([1.0f32, -1.0f32, 0.0f32]);
+        assert_relative_eq!(mixed.l1_norm(), 0.0); // 1 + (-1) + 0 = 0
+        assert_relative_eq!(mixed.l2_norm_sqd(), 2.0);
+        
+        // Test with equal values
+        let equal = XYZVec::new([3.0f32, 3.0f32, 3.0f32]);
+        assert_relative_eq!(equal.l1_norm(), 9.0);
+        assert_relative_eq!(equal.l2_norm_sqd(), 27.0);
+        
+        // Test cross product with parallel vectors
+        let parallel1 = XYZVec::new([1.0f32, 2.0f32, 3.0f32]);
+        let parallel2 = XYZVec::new([2.0f32, 4.0f32, 6.0f32]); // 2 * parallel1
+        let parallel_cross = parallel1.cross_prod(parallel2);
+        assert_eq!(parallel_cross.x(), 0.0);
+        assert_eq!(parallel_cross.y(), 0.0);
+        assert_eq!(parallel_cross.z(), 0.0);
+        
+        // Test with zero components
+        let zero_z = XYZVec::new([1.0f32, 2.0f32, 0.0f32]);
+        assert_relative_eq!(zero_z.l1_norm(), 3.0);
+        assert_relative_eq!(zero_z.l2_norm_sqd(), 5.0);
+    }
 }

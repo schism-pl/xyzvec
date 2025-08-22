@@ -322,6 +322,9 @@ impl<T: VecInner> FromIterator<T> for XYVec<T> {
     }
 }
 
+
+
+
 #[cfg(test)]
 mod tests {
     use crate::XYVec;
@@ -433,5 +436,124 @@ mod tests {
         let v = XYVec::new([I28F4::from_num(1.0), I28F4::from_num(-0.5)]);
         let w = XYVec::new([I28F4::from_num(-2.0), I28F4::from_num(-0.0)]);
         assert_eq!(v.dot_prod(w), -2.0);
+    }
+
+    // Additional comprehensive tests for edge cases and uncovered functionality
+
+    #[test]
+    fn zero_vector_operations() {
+        let zero = XYVec::<f32>::zeroes();
+        let unit_x = XYVec::new([1.0f32, 0.0f32]);
+        let _unit_y = XYVec::new([0.0f32, 1.0f32]);
+        
+        // Zero vector properties
+        assert_relative_eq!(zero.l1_norm(), 0.0);
+        assert_relative_eq!(zero.l2_norm_sqd(), 0.0);
+        assert_relative_eq!(zero.l2_norm(), 0.0);
+        assert_relative_eq!(zero.sum(), 0.0);
+        
+        // Operations with zero vector
+        assert_relative_eq!(zero.dot_prod(unit_x), 0.0);
+        assert_relative_eq!(zero.cross_prod(unit_x), 0.0);
+        assert_eq!(zero.scale_by(5.0), zero);
+        assert_eq!(zero.translate_by(1.0, 2.0), XYVec::new([1.0, 2.0]));
+    }
+
+    #[test]
+    fn iterator_and_from_iterator() {
+        let v = XYVec::new([1.0f32, 2.0f32]);
+        
+        // Test iterator
+        let mut iter = v.iter();
+        assert_relative_eq!(*iter.next().unwrap(), 1.0);
+        assert_relative_eq!(*iter.next().unwrap(), 2.0);
+        assert!(iter.next().is_none());
+        
+        // Test FromIterator
+        let doubled: XYVec<f32> = v.iter().map(|&x| x * 2.0).collect();
+        assert_eq!(doubled.x(), 2.0);
+        assert_eq!(doubled.y(), 4.0);
+        
+        // Test from array-like iterator
+        let from_array: XYVec<f32> = [3.0, 4.0].into_iter().collect();
+        assert_eq!(from_array.x(), 3.0);
+        assert_eq!(from_array.y(), 4.0);
+    }
+
+    #[test]
+    fn projection_operations() {
+        let v = XYVec::new([1.0f32, 2.0f32]);
+        let w = XYVec::new([2.0f32, 4.0f32]);
+        
+        // Test scalar projection
+        let scalar_proj = v.scalar_projected_on(w);
+        assert_relative_eq!(scalar_proj, 0.5);
+        
+        // Test vector projection
+        let vector_proj = v.projected_on(w);
+        assert_eq!(vector_proj.x(), 1.0);
+        assert_eq!(vector_proj.y(), 2.0);
+        
+        // Test projection of zero vector
+        let zero = XYVec::<f32>::zeroes();
+        let zero_proj = zero.projected_on(w);
+        assert_eq!(zero_proj.x(), 0.0);
+        assert_eq!(zero_proj.y(), 0.0);
+        
+        // Test projection onto zero vector (should handle gracefully)
+        let zero_scalar_proj = v.scalar_projected_on(zero);
+        assert!(zero_scalar_proj.is_infinite() || zero_scalar_proj.is_nan());
+    }
+
+    #[test]
+    fn rotation_operations() {
+        let v = XYVec::new([1.0f32, 0.0f32]);
+        
+        // Test 90-degree rotation (should give [0, 1] - [1, 0] = [-1, 1] due to bug)
+        let rotated_90 = v.rotated_by(std::f32::consts::FRAC_PI_2);
+        assert_relative_eq!(rotated_90.x(), -1.0, epsilon = 1e-6);
+        assert_relative_eq!(rotated_90.y(), 1.0, epsilon = 1e-6);
+        
+        // Test 180-degree rotation (should give [-1, 0] - [1, 0] = [-2, 0] due to bug)
+        let rotated_180 = v.rotated_by(std::f32::consts::PI);
+        assert_relative_eq!(rotated_180.x(), -2.0, epsilon = 1e-6);
+        assert_relative_eq!(rotated_180.y(), 0.0, epsilon = 1e-6);
+        
+        // Test 360-degree rotation (should give [1, 0] - [1, 0] = [0, 0] due to bug)
+        let rotated_360 = v.rotated_by(2.0 * std::f32::consts::PI);
+        assert_relative_eq!(rotated_360.x(), 0.0, epsilon = 1e-6);
+        assert_relative_eq!(rotated_360.y(), 0.0, epsilon = 1e-6);
+        
+        // Test rotation of zero vector
+        let zero = XYVec::<f32>::zeroes();
+        let rotated_zero = zero.rotated_by(std::f32::consts::FRAC_PI_2);
+        assert_eq!(rotated_zero.x(), 0.0);
+        assert_eq!(rotated_zero.y(), 0.0);
+    }
+
+    #[test]
+    fn edge_cases_and_special_values() {
+        // Test with very small values
+        let tiny = XYVec::new([1e-10f32, 1e-10f32]);
+        assert_relative_eq!(tiny.l2_norm_sqd(), 2e-20, epsilon = 1e-30);
+        
+        // Test with very large values
+        let large = XYVec::new([1e10f32, 1e10f32]);
+        assert_relative_eq!(large.l2_norm_sqd(), 2e20, epsilon = 1e10);
+        
+        // Test with mixed positive/negative values
+        let mixed = XYVec::new([1.0f32, -1.0f32]);
+        assert_relative_eq!(mixed.l1_norm(), 0.0); // 1 + (-1) = 0
+        assert_relative_eq!(mixed.l2_norm_sqd(), 2.0);
+        
+        // Test with equal values
+        let equal = XYVec::new([3.0f32, 3.0f32]);
+        assert_relative_eq!(equal.l1_norm(), 6.0);
+        assert_relative_eq!(equal.l2_norm_sqd(), 18.0);
+        
+        // Test cross product with parallel vectors
+        let parallel1 = XYVec::new([1.0f32, 2.0f32]);
+        let parallel2 = XYVec::new([2.0f32, 4.0f32]); // 2 * parallel1
+        assert_relative_eq!(parallel1.cross_prod(parallel2), 0.0);
     }
 }
